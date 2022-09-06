@@ -11,6 +11,7 @@ import {
   Grid,
   InputLabel,
   Select,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -97,7 +98,7 @@ export default function Login() {
                     <Typography component="h1" variant="h5">
                       Sign in
                     </Typography>
-                    <Box sx={{ mt: 1 }}>
+                    <Box sx={{ mt: 1, width: "100%" }}>
                       <Box>
                         <TextField
                           margin="normal"
@@ -107,12 +108,11 @@ export default function Login() {
                           label="Email"
                           name="email"
                           autoComplete="email"
-                          autoFocus
                           onBlur={formikProps.handleBlur}
                           onChange={formikProps.handleChange}
                         />
                         <ErrorMessage name="email">
-                          {(msg) => <Box style={{ color: "red" }}>{msg}</Box>}
+                          {(msg) => <span style={{ color: "red" }}>{msg}</span>}
                         </ErrorMessage>
                       </Box>
 
@@ -130,7 +130,7 @@ export default function Login() {
                           onChange={formikProps.handleChange}
                         />
                         <ErrorMessage name="password">
-                          {(msg) => <Box style={{ color: "red" }}>{msg}</Box>}
+                          {(msg) => <span style={{ color: "red" }}>{msg}</span>}
                         </ErrorMessage>
                       </Box>
 
@@ -170,7 +170,7 @@ export default function Login() {
                           </Link>
                         </Grid>
                         <Grid item>
-                          <Link href="#" variant="body2">
+                          <Link href="/register" variant="body2">
                             {"Don't have an account? Sign Up"}
                           </Link>
                         </Grid>

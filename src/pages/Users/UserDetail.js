@@ -39,7 +39,7 @@ export default function UserDetail() {
       }`}
     >
       <div className="row">
-        <div className="d-flex align-items-center col-md-3 border-right">
+        <div className="d-flex justify-content-center align-items-center col-md-3 border-right">
           <div className="d-flex flex-column align-items-center text-center p-3 py-5">
             {/* <img
               className="rounded-circle mt-5"
