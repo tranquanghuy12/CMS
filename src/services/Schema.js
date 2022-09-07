@@ -1,17 +1,17 @@
 import * as Yup from "yup";
 export const Schema = Yup.object().shape({
-  firstName: Yup.string().required("* Tài khoản không để trống"),
-  lastName: Yup.string().required("* Họ tên không để trống"),
+  firstName: Yup.string().required("* Please fill out first name"),
+  lastName: Yup.string().required("* Please fill out last name"),
 
   email: Yup.string()
-    .email("* Email không hợp lệ")
-    .required("* Email không được bỏ trống"),
-  password: Yup.string().required("Mật khẩu không được bỏ trống"),
+    .email("* Invalid email")
+    .required("* Please fill out email"),
+  password: Yup.string().required("* Please fill out password"),
 });
 
 export const loginSchema = Yup.object().shape({
   email: Yup.string()
-    .email("* Email không hợp lệ")
-    .required("* Email không được bỏ trống"),
-  password: Yup.string().required("* Mật khẩu không được bỏ trống"),
+    .email("* Invalid email")
+    .required("* Please fill out email"),
+  password: Yup.string().required("* Please fill out password"),
 });

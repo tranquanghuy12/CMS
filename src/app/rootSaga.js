@@ -165,10 +165,10 @@ function* watchDeleteUsers(action) {
 
     //re-render Trash component
     yield put(getAllUsersTrash());
-    swal({
-      title: "Delete users successfully",
-      icon: "success",
-    });
+    // swal({
+    //   title: "Delete users successfully",
+    //   icon: "success",
+    // });
   } catch (error) {
     swal({
       title: "Delete users failed",

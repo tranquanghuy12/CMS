@@ -5,50 +5,66 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Box, Typography } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import { blue } from "@mui/material/colors";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate, useLocation } from "react-router-dom";
+import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import Tooltip from "@mui/material/Tooltip";
+
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { deleteUsers, getIdListToRestore } from "../../redux/Users/UsersSlice";
+import swal from "sweetalert";
+import { selectTranslationsUsersList } from "../../redux/ChangeLanguage/ChangeLanguageSlice";
 
 export default function Trash() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [selectionModel, setSelectionModel] = useState([]);
 
-  const columns = [
-    { field: "userID", headerName: "User ID", width: 100 },
-    { field: "firstName", headerName: "First name", width: 150 },
-    { field: "lastName", headerName: "Last name", width: 150 },
-    { field: "email", headerName: "Email", width: 250 },
-    { field: "password", headerName: "Password", width: 150 },
-    {
-      field: "fullName",
-      headerName: "Full name",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
-      width: 200,
-      valueGetter: (params) =>
-        `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-    },
-    {
-      field: " ",
-      width: 200,
-      renderCell: (cellValues) => {
-        return (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={(event) => {
-              // handleClick(event, cellValues);
-              navigate(`/userdetail/${cellValues.id}`);
-            }}
-          >
-            View
-          </Button>
-        );
-      },
-    },
-  ];
+  //including 2 languages for the trash table
+  const translationsUsersList = useSelector(selectTranslationsUsersList);
+
+  const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
+
+  // lang = 'en' or 'vi'
+  const { lang } = useSelector((rootReducer) => rootReducer.i18n);
+
+  // const columns = [
+  //   { field: "userID", headerName: "User ID", width: 100 },
+  //   { field: "firstName", headerName: "First name", width: 150 },
+  //   { field: "lastName", headerName: "Last name", width: 150 },
+  //   { field: "email", headerName: "Email", width: 250 },
+  //   { field: "password", headerName: "Password", width: 150 },
+  //   {
+  //     field: "fullName",
+  //     headerName: "Full name",
+  //     description: "This column has a value getter and is not sortable.",
+  //     sortable: false,
+  //     width: 200,
+  //     valueGetter: (params) =>
+  //       `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+  //   },
+  //   {
+  //     field: " ",
+  //     width: 200,
+  //     renderCell: (cellValues) => {
+  //       return (
+  //         <Button
+  //           variant="contained"
+  //           color="primary"
+  //           onClick={(event) => {
+  //             // handleClick(event, cellValues);
+  //             navigate(`/userdetail/${cellValues.id}`);
+  //           }}
+  //         >
+  //           View
+  //         </Button>
+  //       );
+  //     },
+  //   },
+  // ];
 
   const { usersListTrash } = useSelector(
     (rootReducer) => rootReducer.getUsersListTrash
@@ -68,7 +84,20 @@ export default function Trash() {
   };
 
   const handleDelete = () => {
-    dispatch(deleteUsers(selectionModel));
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to restore it!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        dispatch(deleteUsers(selectionModel));
+        swal("Delete users successfully!", {
+          icon: "success",
+        });
+      }
+    });
   };
 
   return (
@@ -82,17 +111,33 @@ export default function Trash() {
               alignItems: "center",
             }}
           >
-            <Typography variant="h5">Trash List</Typography>
+            <Typography variant="h5">
+              {lang === "en" ? "Trash" : "Thùng rác"}
+            </Typography>
             <Stack direction="row" spacing={1}>
               <Box sx={{ position: "relative" }}>
-                <Button
-                  disabled={isLoading}
-                  variant="contained"
-                  color="primary"
-                  onClick={handleRestore}
-                >
-                  RESTORE
-                </Button>
+                {selectionModel.length !== 0 ? (
+                  <Tooltip
+                    title={lang === "en" ? "Restore" : "Khôi phục"}
+                    arrow
+                  >
+                    <IconButton
+                      disabled={isLoading}
+                      variant="contained"
+                      color="primary"
+                      onClick={handleRestore}
+                    >
+                      <RestoreFromTrashIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Restore" arrow>
+                    <IconButton disabled={true} variant="contained">
+                      <RestoreFromTrashIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
                 {isLoading && (
                   <CircularProgress
                     size={24}
@@ -108,14 +153,25 @@ export default function Trash() {
                 )}
               </Box>
               <Box sx={{ m: 1, position: "relative" }}>
-                <Button
-                  disabled={isLoading}
-                  variant="contained"
-                  color="error"
-                  onClick={handleDelete}
-                >
-                  DELETE
-                </Button>
+                {selectionModel.length !== 0 ? (
+                  <Tooltip title={lang === "en" ? "Delete" : "Xóa"} arrow>
+                    <IconButton
+                      disabled={isLoading}
+                      variant="contained"
+                      color="error"
+                      onClick={handleDelete}
+                    >
+                      <DeleteForeverIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Delete" arrow>
+                    <IconButton disabled={true} variant="contained">
+                      <DeleteForeverIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
                 {isLoading && (
                   <CircularProgress
                     size={24}
@@ -136,7 +192,7 @@ export default function Trash() {
           <Box sx={{ height: 400, width: "100%", mt: 3 }}>
             <DataGrid
               rows={usersListTrash}
-              columns={columns}
+              columns={translationsUsersList}
               pageSize={5}
               rowsPerPageOptions={[5]}
               checkboxSelection
@@ -146,12 +202,19 @@ export default function Trash() {
                 setSelectionModel(newSelectionModel);
               }}
               selectionModel={selectionModel}
-              {...columns}
+              {...translationsUsersList}
+              sx={{
+                backgroundColor: `${mode === "light" ? "white" : "#424242"}`,
+              }}
             />
           </Box>
         </Box>
+      ) : userData?.role === "Member" ? (
+        <Box>Only admins are allowed to use this site</Box>
       ) : (
-        <Box>Only administrators are allowed to use this site</Box>
+        <Box>
+          Please <Link to="/login">login</Link> to use this site
+        </Box>
       )}
     </Box>
   );

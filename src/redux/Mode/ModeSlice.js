@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-let mode;
+let mode = "light";
 if (localStorage.getItem("MODE")) {
   mode = localStorage.getItem("MODE");
 }

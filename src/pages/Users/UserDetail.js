@@ -24,14 +24,6 @@ export default function UserDetail() {
     dispatch(getIdBlog(id));
   }, []);
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  }));
-
   return (
     <div
       className={`container rounded ${
@@ -116,6 +108,18 @@ export default function UserDetail() {
                   className="form-control"
                   placeholder="enter phone number"
                   value={userById.password}
+                />
+              </div>
+            </div>
+            <div className="row mt-3">
+              <div className="col-md-12">
+                <label className="labels">Role</label>
+                <input
+                  disabled
+                  type="text"
+                  className="form-control"
+                  placeholder="enter phone number"
+                  value={userById.role}
                 />
               </div>
             </div>

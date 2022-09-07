@@ -23,7 +23,7 @@ export default function ChangeLanguage() {
         labelId="demo-select-small"
         id="demo-select-small"
         value={lang}
-        label="Age"
+        label="Language"
         onChange={handleChange}
       >
         {Object.entries(supportedLangs).map(([code, name]) => (
