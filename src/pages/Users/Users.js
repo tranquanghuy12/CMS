@@ -37,39 +37,6 @@ export default function Users() {
   // lang = 'en' or 'vi'
   const { lang } = useSelector((rootReducer) => rootReducer.i18n);
 
-  // const columns = [
-  //   { field: "userID", headerName: "User ID", width: 100 },
-  //   { field: "firstName", headerName: "First name", width: 150 },
-  //   { field: "lastName", headerName: "Last name", width: 150 },
-  //   { field: "email", headerName: "Email", width: 250 },
-  //   { field: "password", headerName: "Password", width: 150 },
-  //   {
-  //     field: "fullName",
-  //     headerName: "Full name",
-  //     description: "This column has a value getter and is not sortable.",
-  //     sortable: false,
-  //     width: 200,
-  //     valueGetter: (params) =>
-  //       `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-  //   },
-  //   {
-  //     field: " ",
-  //     width: 200,
-  //     renderCell: (cellValues) => {
-  //       return (
-  //         <Button variant="contained" color="primary">
-  //           <Link
-  //             style={{ textDecoration: "none", color: "white" }}
-  //             to={`/userdetail/${cellValues.id}`}
-  //           >
-  //             View
-  //           </Link>
-  //         </Button>
-  //       );
-  //     },
-  //   },
-  // ];
-
   const { usersList } = useSelector((rootReducer) => rootReducer.getUsersList);
 
   //User login account
@@ -133,11 +100,9 @@ export default function Users() {
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  <Tooltip title="Delete" arrow>
-                    <IconButton disabled={true} variant="contained">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton disabled={true} variant="contained">
+                    <DeleteIcon />
+                  </IconButton>
                 )}
                 {isLoading && (
                   <CircularProgress
@@ -167,6 +132,9 @@ export default function Users() {
               onSelectionModelChange={(newSelectionModel) => {
                 setSelectionModel(newSelectionModel);
               }}
+              isRowSelectable={(params) =>
+                params.row.email !== "tranquanghuy12h@gmail.com"
+              }
               selectionModel={selectionModel}
               {...translationsUsersList}
               sx={{

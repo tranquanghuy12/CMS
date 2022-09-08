@@ -78,15 +78,6 @@ const initialState = {
       { field: "email", headerName: "Email", width: 250 },
       { field: "password", headerName: "Password", width: 150 },
       { field: "role", headerName: "Role", width: 150 },
-      // {
-      //   field: "fullName",
-      //   headerName: "Full name",
-      //   description: "This column has a value getter and is not sortable.",
-      //   sortable: false,
-      //   width: 200,
-      //   valueGetter: (params) =>
-      //     `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-      // },
       {
         field: " ",
         width: 200,
@@ -110,15 +101,6 @@ const initialState = {
       { field: "lastName", headerName: "Họ", width: 150 },
       { field: "email", headerName: "Email", width: 250 },
       { field: "password", headerName: "Mật khẩu", width: 150 },
-      // {
-      //   field: "fullName",
-      //   headerName: "Họ và tên",
-      //   description: "Cột này có giá trị nhận và không thể sắp xếp.",
-      //   sortable: false,
-      //   width: 200,
-      //   valueGetter: (params) =>
-      //     `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-      // },
       { field: "role", headerName: "Vai trò", width: 150 },
       {
         field: " ",

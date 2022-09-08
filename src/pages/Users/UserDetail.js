@@ -20,6 +20,8 @@ export default function UserDetail() {
 
   const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
 
+  const { isLoading } = useSelector((rootReducer) => rootReducer.getLoading);
+
   useEffect(() => {
     dispatch(getIdBlog(id));
   }, []);
@@ -33,11 +35,6 @@ export default function UserDetail() {
       <div className="row">
         <div className="d-flex justify-content-center align-items-center col-md-3 border-right">
           <div className="d-flex flex-column align-items-center text-center p-3 py-5">
-            {/* <img
-              className="rounded-circle mt-5"
-              width="150px"
-              src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
-            /> */}
             <Avatar
               alt="Remy Sharp"
               src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"

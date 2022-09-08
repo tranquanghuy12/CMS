@@ -131,11 +131,9 @@ export default function Trash() {
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  <Tooltip title="Restore" arrow>
-                    <IconButton disabled={true} variant="contained">
-                      <RestoreFromTrashIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton disabled={true} variant="contained">
+                    <RestoreFromTrashIcon />
+                  </IconButton>
                 )}
 
                 {isLoading && (
@@ -165,11 +163,9 @@ export default function Trash() {
                     </IconButton>
                   </Tooltip>
                 ) : (
-                  <Tooltip title="Delete" arrow>
-                    <IconButton disabled={true} variant="contained">
-                      <DeleteForeverIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton disabled={true} variant="contained">
+                    <DeleteForeverIcon />
+                  </IconButton>
                 )}
 
                 {isLoading && (

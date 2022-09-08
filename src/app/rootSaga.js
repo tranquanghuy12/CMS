@@ -46,8 +46,10 @@ function* watchGetUsersList() {
 
 function* watchGetUserById(action) {
   try {
+    yield put(getLoading(true));
     const res = yield call(http.get, `/blogs/${action.payload}`);
     yield put(getUserById(res.data));
+    yield put(getLoading(false));
   } catch (error) {
     console.log(error);
   }
