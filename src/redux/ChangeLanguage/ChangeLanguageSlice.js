@@ -72,7 +72,7 @@ const initialState = {
   },
   translationsUsersList: {
     en: [
-      { field: "userID", headerName: "User ID", width: 100 },
+      { field: "userId", headerName: "User ID", width: 100 },
       { field: "firstName", headerName: "First name", width: 150 },
       { field: "lastName", headerName: "Last name", width: 150 },
       { field: "email", headerName: "Email", width: 250 },
@@ -96,7 +96,7 @@ const initialState = {
       },
     ],
     vi: [
-      { field: "userID", headerName: "ID người dùng", width: 100 },
+      { field: "userId", headerName: "ID người dùng", width: 100 },
       { field: "firstName", headerName: "Tên", width: 150 },
       { field: "lastName", headerName: "Họ", width: 150 },
       { field: "email", headerName: "Email", width: 250 },

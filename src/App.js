@@ -15,6 +15,8 @@ import UserDetail from "./pages/Users/UserDetail";
 import Trash from "./pages/Trash/Trash";
 import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
+import ProjectDetail from "./pages/Projects/ProjectDetail";
+import AddProject from "./pages/Projects/AddProject";
 
 function App() {
   return (
@@ -25,6 +27,14 @@ function App() {
         <Route
           path="/projects"
           element={<SideBar component={<Projects />} />}
+        />
+        <Route
+          path="/projects/:id"
+          element={<SideBar component={<ProjectDetail />} />}
+        />
+        <Route
+          path="/addproject"
+          element={<SideBar component={<AddProject />} />}
         />
         <Route path="/about" element={<SideBar component={<About />} />} />
         <Route path="/adduser" element={<SideBar component={<AddUser />} />} />

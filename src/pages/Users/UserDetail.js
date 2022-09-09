@@ -83,7 +83,7 @@ export default function UserDetail() {
                         mode === "light" ? "text-black-50" : "text-white-50"
                       }`}
                     >
-                      ID: {userById.userID}
+                      ID: {userById.userId}
                     </span>
                     <span> </span>
                   </div>

@@ -22,10 +22,15 @@ import swal from "sweetalert";
 import { createAction } from "@reduxjs/toolkit";
 import { getLoading } from "../redux/Loading/LoadingSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  getProjectById,
+  getProjectsList,
+} from "../redux/Projects/ProjectsSlice";
 
 export const getAllUsers = createAction("Users/getAllUsers");
 export const getAllUsersTrash = createAction("Users/getAllUsersTrash");
 export const getLoadingOnRefresh = createAction("Loading/getLoadingOnRefresh");
+export const getAllProjects = createAction("Projects/getAllProjects");
 
 function* watchLoadingOnRefresh() {
   yield put(getLoading(true));
@@ -198,6 +203,29 @@ function* watchRegister(action) {
   }
 }
 
+// get all projects
+function* watchGetProjectsList(action) {
+  try {
+    const res = yield call(http.get, "/projects");
+    yield put(getProjectsList(res.data));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* watchGetProjectById(action) {
+  try {
+    const res = yield call(http.get, `/projects/${action.payload}`);
+    yield put(getProjectById(res.data));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function* watchDeleteProject(action){
+  
+}
+
 export default function* rootSaga() {
   yield takeLatest(getLoadingOnRefresh, watchLoadingOnRefresh);
   yield takeLatest(getAllUsers, watchGetUsersList);
@@ -206,9 +234,10 @@ export default function* rootSaga() {
   yield takeLatest(getAllUsersTrash, watchGetUsersTrash);
   yield takeLatest("Users/postUsersList", watchPostUsersList);
   yield takeLatest("Users/moveUsersToTrash", watchMoveUsersToTrash);
-
   yield takeLatest("Users/getIdListToRestore", watchRestoreUsers);
   yield takeLatest("Users/deleteUsers", watchDeleteUsers);
-
   yield takeLatest("Register/userRegistration", watchRegister);
+
+  yield takeLatest(getAllProjects, watchGetProjectsList);
+  yield takeLatest("Projects/getProjectId", watchGetProjectById);
 }

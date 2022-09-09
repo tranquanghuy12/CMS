@@ -32,7 +32,7 @@ export default function Trash() {
   const { lang } = useSelector((rootReducer) => rootReducer.i18n);
 
   // const columns = [
-  //   { field: "userID", headerName: "User ID", width: 100 },
+  //   { field: "userId", headerName: "User ID", width: 100 },
   //   { field: "firstName", headerName: "First name", width: 150 },
   //   { field: "lastName", headerName: "Last name", width: 150 },
   //   { field: "email", headerName: "Email", width: 250 },
