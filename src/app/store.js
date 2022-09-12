@@ -15,6 +15,7 @@ import userRegistration from "../redux/Register/Register";
 import getProjectsList from "../redux/Projects/ProjectsSlice";
 import getProjectId from "../redux/Projects/ProjectsSlice";
 import getProjectById from "../redux/Projects/ProjectsSlice";
+import moveProjectToTrash from "../redux/Projects/ProjectsSlice";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -35,6 +36,7 @@ export const store = configureStore({
     getProjectId: getProjectId,
     getProjectsList: getProjectsList,
     getProjectById: getProjectById,
+    moveProjectToTrash: moveProjectToTrash,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware),

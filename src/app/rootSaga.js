@@ -1,14 +1,4 @@
-import {
-  put,
-  takeEvery,
-  all,
-  takeLatest,
-  take,
-  throttle,
-  debounce,
-  call,
-  delay,
-} from "redux-saga/effects";
+import { put, takeLatest, call } from "redux-saga/effects";
 import {
   getIdBlog,
   getUserById,
@@ -21,7 +11,6 @@ import { http } from "../util/config";
 import swal from "sweetalert";
 import { createAction } from "@reduxjs/toolkit";
 import { getLoading } from "../redux/Loading/LoadingSlice";
-import { useNavigate } from "react-router-dom";
 import {
   getProjectById,
   getProjectsList,
@@ -206,7 +195,9 @@ function* watchRegister(action) {
 // get all projects
 function* watchGetProjectsList(action) {
   try {
+    yield put(getLoading(true));
     const res = yield call(http.get, "/projects");
+    yield put(getLoading(false));
     yield put(getProjectsList(res.data));
   } catch (error) {
     console.log(error);
@@ -222,8 +213,43 @@ function* watchGetProjectById(action) {
   }
 }
 
-function* watchDeleteProject(action){
-  
+function* watchUpdateProject(action) {
+  try {
+    yield put(getLoading(true));
+    const res = yield call(
+      http.put,
+      `/projects/${action.payload.id}`,
+      action.payload
+    );
+    yield put(getLoading(false));
+  } catch (error) {
+    swal({
+      title: "Update failed!",
+      icon: "error",
+    });
+  }
+}
+
+function* watchMoveProjectsToTrash(action) {
+  try {
+    yield put(getLoading(true));
+    for (let i in action.payload) {
+      const res = yield call(http.delete, `/projects/${action.payload[i]}`);
+    }
+    yield put(getLoading(false));
+    swal({
+      title: "Move projects to trash successfully",
+      icon: "success",
+    });
+
+    //re-render Projects component
+    yield put(getAllProjects());
+  } catch (error) {
+    swal({
+      title: "Delete projects failed",
+      icon: "error",
+    });
+  }
 }
 
 export default function* rootSaga() {
@@ -240,4 +266,6 @@ export default function* rootSaga() {
 
   yield takeLatest(getAllProjects, watchGetProjectsList);
   yield takeLatest("Projects/getProjectId", watchGetProjectById);
+  yield takeLatest("Projects/updateProject", watchUpdateProject);
+  yield takeLatest("Projects/moveProjectToTrash", watchMoveProjectsToTrash);
 }

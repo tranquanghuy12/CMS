@@ -18,10 +18,21 @@ export const projectsSlice = createSlice({
     getProjectById: (state, action) => {
       state.projectById = action.payload;
     },
+
+    updateProject: (state, action) => {
+      state.projectById = action.payload;
+    },
+
+    moveProjectToTrash: (state, action) => {},
   },
 });
 
-export const { getProjectId, getProjectsList, getProjectById } =
-  projectsSlice.actions;
+export const {
+  getProjectId,
+  getProjectsList,
+  getProjectById,
+  updateProject,
+  moveProjectToTrash,
+} = projectsSlice.actions;
 
 export default projectsSlice.reducer;

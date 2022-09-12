@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -8,33 +8,35 @@ import Typography from "@mui/material/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProjects } from "../../app/rootSaga";
 import { useNavigate } from "react-router-dom";
-import { IconButton, Stack, Tooltip } from "@mui/material";
+import { CircularProgress, IconButton, Stack, Tooltip } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
-
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
+import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
+import { moveProjectToTrash } from "../../redux/Projects/ProjectsSlice";
+import { blue } from "@mui/material/colors";
 
 export default function Projects() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [projectsId, setProjectId] = useState([]);
 
   const { projectsList } = useSelector(
     (rootReducer) => rootReducer.getProjectsList
   );
 
+  const { isLoading } = useSelector((rootReducer) => rootReducer.getLoading);
+
   useEffect(() => {
     dispatch(getAllProjects());
   }, []);
 
-  const handleChange = (event) => {
-    console.log(event.target.checked);
+  const handleMoveProjectsToTrash = async () => {
+    try {
+      await dispatch(moveProjectToTrash(projectsId));
+      setProjectId([]);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -49,7 +51,7 @@ export default function Projects() {
       >
         <Typography variant="h5">Projects List</Typography>
         <Stack direction="row" spacing={1}>
-          <Tooltip title="Add project" arrow>
+          <Tooltip title="Add" arrow>
             <IconButton
               variant="contained"
               color="primary"
@@ -58,6 +60,36 @@ export default function Projects() {
               <CreateNewFolderIcon />
             </IconButton>
           </Tooltip>
+          <Box sx={{ m: 1, position: "relative" }}>
+            {projectsId.length !== 0 ? (
+              <Tooltip title="Move to trash" arrow>
+                <IconButton
+                  variant="contained"
+                  color="primary"
+                  onClick={handleMoveProjectsToTrash}
+                >
+                  <FolderDeleteIcon color="error" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <IconButton disabled={true} variant="contained" color="primary">
+                <FolderDeleteIcon />
+              </IconButton>
+            )}
+            {isLoading && (
+              <CircularProgress
+                size={24}
+                sx={{
+                  color: blue[500],
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  marginTop: "-12px",
+                  marginLeft: "-12px",
+                }}
+              />
+            )}
+          </Box>
         </Stack>
       </Box>
 
@@ -72,33 +104,32 @@ export default function Projects() {
         {projectsList.map((project, index) => {
           return (
             <Card
-              sx={{ mb: 3, mr: 3, width: "30%" }}
+              sx={{ mb: 3, mr: 3, p: 1, width: "30%" }}
               variant="outlined"
               key={index}
             >
               <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography
-                    sx={{ fontSize: 14, m: 0 }}
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    Word of the Day
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="h5" component="div">
+                    {project.name}
                   </Typography>
                   <Checkbox
-                    onClick={handleChange}
+                    checked={projectsId.includes(project.id)}
+                    value={projectsId}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        setProjectId([...projectsId, project.id]);
+                      } else {
+                        setProjectId(
+                          projectsId.filter(
+                            (projectId) => projectId !== project.id
+                          )
+                        );
+                      }
+                    }}
                     inputProps={{ "aria-label": "controlled" }}
                   />
                 </Box>
-                <Typography variant="h5" component="div">
-                  {project.name}
-                </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
                   {project.member.length}{" "}
                   {project.member.length > 1 ? "members" : "member"}

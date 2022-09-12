@@ -31,41 +31,6 @@ export default function Trash() {
   // lang = 'en' or 'vi'
   const { lang } = useSelector((rootReducer) => rootReducer.i18n);
 
-  // const columns = [
-  //   { field: "userId", headerName: "User ID", width: 100 },
-  //   { field: "firstName", headerName: "First name", width: 150 },
-  //   { field: "lastName", headerName: "Last name", width: 150 },
-  //   { field: "email", headerName: "Email", width: 250 },
-  //   { field: "password", headerName: "Password", width: 150 },
-  //   {
-  //     field: "fullName",
-  //     headerName: "Full name",
-  //     description: "This column has a value getter and is not sortable.",
-  //     sortable: false,
-  //     width: 200,
-  //     valueGetter: (params) =>
-  //       `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-  //   },
-  //   {
-  //     field: " ",
-  //     width: 200,
-  //     renderCell: (cellValues) => {
-  //       return (
-  //         <Button
-  //           variant="contained"
-  //           color="primary"
-  //           onClick={(event) => {
-  //             // handleClick(event, cellValues);
-  //             navigate(`/userdetail/${cellValues.id}`);
-  //           }}
-  //         >
-  //           View
-  //         </Button>
-  //       );
-  //     },
-  //   },
-  // ];
-
   const { usersListTrash } = useSelector(
     (rootReducer) => rootReducer.getUsersListTrash
   );

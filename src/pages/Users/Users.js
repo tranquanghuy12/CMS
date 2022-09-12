@@ -26,7 +26,6 @@ import { selectTranslationsUsersList } from "../../redux/ChangeLanguage/ChangeLa
 export default function Users() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const [selectionModel, setSelectionModel] = useState([]);
 
   //including 2 languages for the users list table
