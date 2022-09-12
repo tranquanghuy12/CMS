@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
@@ -11,7 +11,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { ErrorMessage, useFormik, Formik, Form, Field } from "formik";
@@ -22,10 +22,20 @@ import {
 import { getAllUsers } from "../../app/rootSaga";
 import swal from "sweetalert";
 
+//remove in array 1 the elements that are the same as the elements in array 2
+function removeDup(arr1, arr2) {
+  arr1 = arr1?.filter(
+    (item) => !arr2?.find((item2) => item2.userId === item.userId)
+  );
+  return arr1;
+}
+
 export default function BasicTextFields() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [usersAddToProject, setUsersAddToProject] = useState([]);
 
   const { projectById } = useSelector(
     (rootReducer) => rootReducer.getProjectById
@@ -39,12 +49,45 @@ export default function BasicTextFields() {
   }, [id]);
 
   const initialValues = {
-    name: projectById?.name,
-    description: projectById?.description,
-    member: projectById?.member,
+    name: projectById.name,
+    description: projectById.description,
   };
 
   const handleSubmit = (values) => {
+    swal({
+      title: "Are you sure?",
+      text: "Once updated, you will not be able to restore it!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        dispatch(
+          updateProject({
+            ...projectById,
+            name: values.name,
+            member: projectById?.member.concat(usersAddToProject),
+            description: values.description,
+          })
+        );
+        setUsersAddToProject([]);
+        swal({
+          title: "Update successfully!",
+          icon: "success",
+        });
+      }
+    });
+  };
+
+  const handleChange = (event, values) => {
+    setUsersAddToProject(values);
+  };
+
+  const handleClick = (user) => {
+    navigate(`/userdetail/${user.id}`);
+  };
+
+  const delUsersInProject = (e, value) => {
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to restore it!",
@@ -56,20 +99,22 @@ export default function BasicTextFields() {
         dispatch(
           updateProject({
             ...projectById,
-            name: values.name,
-            description: values.description,
+            member: projectById?.member.filter(
+              (mem) => mem.userId !== value.userId
+            ),
           })
         );
-        swal({
-          title: "Update successfully!",
+        swal("Member removed from the project successfully!", {
           icon: "success",
         });
       }
     });
   };
 
-  const handleChange = (event, values) => {
-    console.log(values);
+  const delUsersAddToProject = (e, value) => {
+    setUsersAddToProject(
+      usersAddToProject.filter((mem) => mem.userId !== value.userId)
+    );
   };
 
   const handleClickOpen = () => {
@@ -121,6 +166,34 @@ export default function BasicTextFields() {
                       onChange={formikProps.handleChange}
                     />
                   </Box>
+
+                  {/* users in project */}
+                  <Stack direction="row" spacing={1}>
+                    {projectById.member?.map((user, index) => {
+                      return (
+                        <Chip
+                          key={index}
+                          color="primary"
+                          label={user.firstName + ", " + user.lastName}
+                          onClick={() => handleClick(user)}
+                          onDelete={(e) => delUsersInProject(e, user)}
+                        />
+                      );
+                    })}
+                    {/* user want to add to project */}
+                    {usersAddToProject !== []
+                      ? usersAddToProject.map((user, index) => {
+                          return (
+                            <Chip
+                              key={index}
+                              label={user.firstName + ", " + user.lastName}
+                              onClick={handleClick}
+                              onDelete={(e) => delUsersAddToProject(e, user)}
+                            />
+                          );
+                        })
+                      : null}
+                  </Stack>
                 </Grid>
 
                 <Grid item xs={6}>
@@ -134,10 +207,11 @@ export default function BasicTextFields() {
                         <Autocomplete
                           multiple
                           id="tags-outlined"
-                          options={usersList}
+                          options={removeDup(usersList, projectById.member)}
                           getOptionLabel={(option) =>
                             option.firstName + " " + option.lastName
                           }
+                          value={usersAddToProject}
                           filterSelectedOptions
                           renderInput={(params) => (
                             <TextField
@@ -145,7 +219,6 @@ export default function BasicTextFields() {
                               label="Choose who you want to add"
                               placeholder="User name"
                               variant="standard"
-                              name="member"
                             />
                           )}
                           onChange={handleChange}
