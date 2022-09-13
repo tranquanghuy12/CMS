@@ -19,7 +19,7 @@ import {
   getProjectId,
   updateProject,
 } from "../../redux/Projects/ProjectsSlice";
-import { getAllUsers } from "../../app/rootSaga";
+import { getAllProjects, getAllUsers } from "../../app/rootSaga";
 import swal from "sweetalert";
 
 //remove in array 1 the elements that are the same as the elements in array 2
@@ -60,21 +60,29 @@ export default function BasicTextFields() {
       icon: "warning",
       buttons: true,
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => {
       if (willDelete) {
-        dispatch(
-          updateProject({
-            ...projectById,
-            name: values.name,
-            member: projectById?.member.concat(usersAddToProject),
-            description: values.description,
-          })
-        );
-        setUsersAddToProject([]);
-        swal({
-          title: "Update successfully!",
-          icon: "success",
-        });
+        try {
+          await dispatch(
+            updateProject({
+              ...projectById,
+              name: values.name === undefined ? projectById.name : values.name,
+              member: projectById?.member.concat(usersAddToProject),
+              description:
+                values.description === undefined
+                  ? projectById.description
+                  : values.description,
+            })
+          );
+          setUsersAddToProject([]);
+          dispatch(getAllProjects());
+          swal({
+            title: "Update successfully!",
+            icon: "success",
+          });
+        } catch (error) {
+          console.log(error);
+        }
       }
     });
   };
@@ -104,7 +112,8 @@ export default function BasicTextFields() {
             ),
           })
         );
-        swal("Member removed from the project successfully!", {
+        swal({
+          title: "Member removed from the project successfully!",
           icon: "success",
         });
       }

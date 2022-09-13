@@ -83,7 +83,6 @@ export default function AddUser() {
       >
         {(formikProps) => {
           const { values, error, touched } = formikProps;
-          console.log("values", values);
           return (
             <Form onSubmit={formikProps.handleSubmit}>
               {userData?.role === "Admin" ? (

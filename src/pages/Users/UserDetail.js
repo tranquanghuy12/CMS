@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField } from "@mui/material";
 
 import Avatar from "@mui/material/Avatar";
@@ -11,15 +11,26 @@ import { ErrorMessage, useFormik, Formik, Form, Field } from "formik";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getIdBlog } from "../../redux/Users/UsersSlice";
+import { getIdBlog, updateUser } from "../../redux/Users/UsersSlice";
 import { getUserById } from "../../redux/Users/UsersSlice";
 import { Schema } from "../../services/Schema";
+import { getAllProjects } from "../../app/rootSaga";
+import swal from "sweetalert";
 
 export default function UserDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const { userById } = useSelector((rootReducer) => rootReducer.getUserById);
+  console.log("userById", userById);
+  const { projectsList } = useSelector(
+    (rootReducer) => rootReducer.getProjectsList
+  );
+
+  // find all projects in the list of projects that the user is involved in
+  const userProjects = projectsList.filter((project) =>
+    project.member.find((mem) => mem.userId === userById.userId)
+  );
 
   const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
 
@@ -27,20 +38,63 @@ export default function UserDetail() {
 
   useEffect(() => {
     dispatch(getIdBlog(id));
+    dispatch(getAllProjects());
   }, []);
 
+  useEffect(() => {
+    dispatch(
+      updateUser({
+        ...userById,
+        projects: userProjects,
+      })
+    );
+  }, [projectsList]);
+
   const initialValues = {
-    firstName: userById?.firstName,
-    lastName: userById?.lastName,
-    email: userById?.email,
-    password: userById?.password,
-    role: userById?.role,
+    firstName: userById.firstName,
+    lastName: userById.lastName,
+    email: userById.email,
+    password: userById.password,
+    role: userById.role,
   };
 
-  console.log("initialValues", initialValues);
-
   const handleSubmit = (values) => {
-    console.log("values when submit", values);
+    swal({
+      title: "Are you sure?",
+      text: "Once updated, you will not be able to restore it!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        try {
+          dispatch(
+            updateUser({
+              ...userById,
+              firstName:
+                values.firstName === undefined
+                  ? userById.firstName
+                  : values.firstName,
+              lastName:
+                values.lastName === undefined
+                  ? userById.lastName
+                  : values.lastName,
+              email: values.email === undefined ? userById.email : values.email,
+              password:
+                values.password === undefined
+                  ? userById.password
+                  : values.password,
+            })
+          );
+          swal({
+            title: "Update successfully!",
+            icon: "success",
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
   };
 
   return (
@@ -49,14 +103,9 @@ export default function UserDetail() {
         mode === "light" ? "bg-white" : "bg-dark"
       }`}
     >
-      <Formik
-        initialValues={initialValues}
-        validationSchema={Schema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {(formikProps) => {
           const { values, error, touched } = formikProps;
-
           return (
             <Form onSubmit={formikProps.handleSubmit}>
               <div className="row">
@@ -100,9 +149,8 @@ export default function UserDetail() {
                           type="text"
                           className="form-control"
                           placeholder="first name"
-                          value={formikProps.values.firstName}
                           name="firstName"
-                          id="firstName"
+                          defaultValue={userById.firstName}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlur}
                         />
@@ -113,9 +161,8 @@ export default function UserDetail() {
                           type="text"
                           className="form-control"
                           placeholder="last name"
-                          value={formikProps.values.lastName}
                           name="lastName"
-                          id="lastName"
+                          defaultValue={userById.lastName}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlue}
                         />
@@ -129,8 +176,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="email"
                           name="email"
-                          id="email"
-                          value={formikProps.values.email}
+                          defaultValue={userById.email}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlur}
                         />
@@ -144,8 +190,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="password"
                           name="password"
-                          id="password"
-                          value={formikProps.values.password}
+                          defaultValue={userById.password}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlur}
                         />
@@ -160,8 +205,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="role"
                           name="role"
-                          id="role"
-                          value={formikProps.values.role}
+                          defaultValue={userById.role}
                         />
                       </div>
                     </div>
@@ -208,83 +252,5 @@ export default function UserDetail() {
         }}
       </Formik>
     </div>
-    // <Box>
-    //   <Box sx={{ height: 150, backgroundColor: "#d6d6d6", borderRadius: 5 }}>
-    //     <Stack
-    //       direction="row"
-    //       spacing={2}
-    //       sx={{
-    //         display: "flex",
-    //         justifyContent: "center",
-    //         position: "relative",
-    //         top: "75%",
-    //       }}
-    //     >
-    //       <Avatar
-    //         alt="Remy Sharp"
-    //         src="/static/images/avatar/1.jpg"
-    //         sx={{
-    //           width: 86,
-    //           height: 86,
-    //         }}
-    //       />
-    //     </Stack>
-    //   </Box>
-    //   <Typography variant="h4" sx={{ my: 10, textAlign: "center" }}>
-    //     {userById.firstName} {userById.lastName}
-    //   </Typography>
-
-    //   <Box sx={{ width: "100%" }}>
-    //     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-    //       <Grid item xs={6}>
-    //         <Typography variant="h6" sx={{ textAlign: "center" }}>
-    //           Profile
-    //         </Typography>
-    //         <Box
-    //           component="form"
-    //           sx={{
-    //             "& > :not(style)": { m: 1, width: "25ch" },
-    //             display: "flex",
-    //             justifyContent: "space-evenly",
-    //           }}
-    //           noValidate
-    //           autoComplete="off"
-    //         >
-    //           <TextField
-    //             id="standard-basic"
-    //             label="First name"
-    //             variant="standard"
-    //             value='qwdqwdqwd'
-    //           />
-    //           <TextField
-    //             id="standard-basic"
-    //             label="Standard"
-    //             variant="standard"
-    //           />
-    //         </Box>
-    //       </Grid>
-
-    //       <Grid item xs={6}>
-    //         <Typography variant="h6" sx={{ textAlign: "center" }}>
-    //           Project
-    //         </Typography>
-    //         <Box
-    //           component="form"
-    //           sx={{
-    //             "& > :not(style)": { m: 1, width: "25ch" },
-    //           }}
-    //           noValidate
-    //           autoComplete="off"
-    //         >
-    //           <TextField
-    //             id="standard-basic"
-    //             label="Standard"
-    //             variant="standard"
-    //           />
-    //         </Box>
-    //       </Grid>
-    //     </Grid>
-    //   </Box>
-    // </Box>
   );
 }

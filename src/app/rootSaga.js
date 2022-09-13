@@ -20,6 +20,7 @@ export const getAllUsers = createAction("Users/getAllUsers");
 export const getAllUsersTrash = createAction("Users/getAllUsersTrash");
 export const getLoadingOnRefresh = createAction("Loading/getLoadingOnRefresh");
 export const getAllProjects = createAction("Projects/getAllProjects");
+export const postProject = createAction("Projects/postProject");
 
 function* watchLoadingOnRefresh() {
   yield put(getLoading(true));
@@ -96,6 +97,21 @@ function* watchPostUsersList(action) {
       title: "Add user failed",
       icon: "error",
     });
+    console.log(error);
+  }
+}
+
+function* watchUpdateUser(action) {
+  try {
+    yield put(getLoading(true));
+    const res = yield call(
+      http.put,
+      `/blogs/${action.payload.id}`,
+      action.payload
+    );
+    yield put(getLoading(false));
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -119,6 +135,7 @@ function* watchMoveUsersToTrash(action) {
       title: "Move to trash failed",
       icon: "error",
     });
+    console.log(error);
   }
 }
 
@@ -147,6 +164,7 @@ function* watchRestoreUsers(action) {
       title: "Restore user failed",
       icon: "error",
     });
+    console.log(error);
   }
 }
 
@@ -161,15 +179,12 @@ function* watchDeleteUsers(action) {
 
     //re-render Trash component
     yield put(getAllUsersTrash());
-    // swal({
-    //   title: "Delete users successfully",
-    //   icon: "success",
-    // });
   } catch (error) {
     swal({
       title: "Delete users failed",
       icon: "error",
     });
+    console.log(error);
   }
 }
 
@@ -189,6 +204,7 @@ function* watchRegister(action) {
       title: "Registration failed",
       icon: "error",
     });
+    console.log(error);
   }
 }
 
@@ -213,6 +229,27 @@ function* watchGetProjectById(action) {
   }
 }
 
+function* watchPostProject(action) {
+  try {
+    yield put(getLoading(true));
+    const res = yield call(http.post, "/projects", action.payload);
+    swal({
+      title: "Create project successfully!",
+      icon: "success",
+    });
+    yield put(getLoading(false));
+
+    //re-render projects list
+    yield put(getAllProjects());
+  } catch (error) {
+    swal({
+      title: "Create project failed",
+      icon: "error",
+    });
+    console.log(error);
+  }
+}
+
 function* watchUpdateProject(action) {
   try {
     yield put(getLoading(true));
@@ -227,6 +264,7 @@ function* watchUpdateProject(action) {
       title: "Update failed!",
       icon: "error",
     });
+    console.log(error);
   }
 }
 
@@ -249,6 +287,7 @@ function* watchMoveProjectsToTrash(action) {
       title: "Delete projects failed",
       icon: "error",
     });
+    console.log(error);
   }
 }
 
@@ -259,6 +298,7 @@ export default function* rootSaga() {
   yield takeLatest("Users/getIdBlogList", watchGetUsersMoveToTrash);
   yield takeLatest(getAllUsersTrash, watchGetUsersTrash);
   yield takeLatest("Users/postUsersList", watchPostUsersList);
+  yield takeLatest("Users/updateUser", watchUpdateUser);
   yield takeLatest("Users/moveUsersToTrash", watchMoveUsersToTrash);
   yield takeLatest("Users/getIdListToRestore", watchRestoreUsers);
   yield takeLatest("Users/deleteUsers", watchDeleteUsers);
@@ -266,6 +306,7 @@ export default function* rootSaga() {
 
   yield takeLatest(getAllProjects, watchGetProjectsList);
   yield takeLatest("Projects/getProjectId", watchGetProjectById);
+  yield takeLatest(postProject, watchPostProject);
   yield takeLatest("Projects/updateProject", watchUpdateProject);
   yield takeLatest("Projects/moveProjectToTrash", watchMoveProjectsToTrash);
 }

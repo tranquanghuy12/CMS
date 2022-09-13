@@ -35,6 +35,9 @@ export const usersSlice = createSlice({
     postUsersList: (state, action) => {
       // state.usersList = action.payload;
     },
+    updateUser: (state, action) => {
+      state.userById = action.payload;
+    },
     moveUsersToTrash: (state, action) => {},
     deleteUsers: (state, action) => {},
   },
@@ -48,6 +51,7 @@ export const {
   getUsersListTrash,
   getIdListToRestore,
   postUsersList,
+  updateUser,
   moveUsersToTrash,
   deleteUsers,
 } = usersSlice.actions;
