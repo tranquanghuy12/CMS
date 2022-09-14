@@ -135,7 +135,11 @@ export default function BasicTextFields() {
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+    <Formik
+      enableReinitialize="true"
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+    >
       {(formikProps) => {
         return (
           <Form onSubmit={formikProps.handleSubmit}>
@@ -158,9 +162,7 @@ export default function BasicTextFields() {
                       name="name"
                       variant="standard"
                       label="Project name"
-                      multiline
-                      rows={1}
-                      defaultValue={projectById.name}
+                      value={formikProps.values.name}
                       onBlur={formikProps.handleBlur}
                       onChange={formikProps.handleChange}
                     />
@@ -170,7 +172,7 @@ export default function BasicTextFields() {
                       label="Description"
                       multiline
                       rows={4}
-                      defaultValue={projectById.description}
+                      value={formikProps.values.description}
                       onBlur={formikProps.handleBlur}
                       onChange={formikProps.handleChange}
                     />

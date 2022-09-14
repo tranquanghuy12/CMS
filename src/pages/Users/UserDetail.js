@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, TextField } from "@mui/material";
+import { Box, Typography, TextField, Input, Link } from "@mui/material";
 
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
@@ -16,13 +16,14 @@ import { getUserById } from "../../redux/Users/UsersSlice";
 import { Schema } from "../../services/Schema";
 import { getAllProjects } from "../../app/rootSaga";
 import swal from "sweetalert";
+import UpdateUserModal from "./UpdateUserModal";
 
 export default function UserDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const { userById } = useSelector((rootReducer) => rootReducer.getUserById);
-  console.log("userById", userById);
+
   const { projectsList } = useSelector(
     (rootReducer) => rootReducer.getProjectsList
   );
@@ -31,6 +32,8 @@ export default function UserDetail() {
   const userProjects = projectsList.filter((project) =>
     project.member.find((mem) => mem.userId === userById.userId)
   );
+
+  console.log("userProjects", userProjects);
 
   const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
 
@@ -103,7 +106,11 @@ export default function UserDetail() {
         mode === "light" ? "bg-white" : "bg-dark"
       }`}
     >
-      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <Formik
+        enableReinitialize="true"
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+      >
         {(formikProps) => {
           const { values, error, touched } = formikProps;
           return (
@@ -150,7 +157,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="first name"
                           name="firstName"
-                          defaultValue={userById.firstName}
+                          value={formikProps.values.firstName}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlur}
                         />
@@ -162,9 +169,10 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="last name"
                           name="lastName"
-                          defaultValue={userById.lastName}
+                          size="small"
+                          value={formikProps.values.lastName}
                           onChange={formikProps.handleChange}
-                          onBlur={formikProps.handleBlue}
+                          onBlur={formikProps.handleBlur}
                         />
                       </div>
                     </div>
@@ -176,7 +184,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="email"
                           name="email"
-                          defaultValue={userById.email}
+                          value={formikProps.values.email}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlur}
                         />
@@ -190,7 +198,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="password"
                           name="password"
-                          defaultValue={userById.password}
+                          value={formikProps.values.password}
                           onChange={formikProps.handleChange}
                           onBlur={formikProps.handleBlur}
                         />
@@ -205,7 +213,7 @@ export default function UserDetail() {
                           className="form-control"
                           placeholder="role"
                           name="role"
-                          defaultValue={userById.role}
+                          value={formikProps.values.role}
                         />
                       </div>
                     </div>
@@ -216,6 +224,7 @@ export default function UserDetail() {
                       >
                         Save Profile
                       </button>
+                      {/* <UpdateUserModal userById={userById} /> */}
                     </div>
                   </div>
                 </div>
@@ -226,13 +235,18 @@ export default function UserDetail() {
                     </div>
                     <br />
                     <div className="col-md-12">
-                      <label className="labels">Experience in Designing</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="experience"
-                        defaultValue
-                      />
+                      {userProjects?.map((proj, index) => {
+                        return (
+                          <Box key={index}>
+                            <Link
+                              underline="none"
+                              href={`/projects/${proj?.id}`}
+                            >
+                              • {proj.name}
+                            </Link>
+                          </Box>
+                        );
+                      })}
                     </div>{" "}
                     <br />
                     <div className="col-md-12">
