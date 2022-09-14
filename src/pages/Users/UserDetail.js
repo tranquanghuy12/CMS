@@ -238,11 +238,12 @@ export default function UserDetail() {
                       {userProjects?.map((proj, index) => {
                         return (
                           <Box key={index}>
+                            <span>• </span>
                             <Link
                               underline="none"
                               href={`/projects/${proj?.id}`}
                             >
-                              • {proj.name}
+                              {proj.name}
                             </Link>
                           </Box>
                         );
