@@ -33,8 +33,6 @@ export default function UserDetail() {
     project.member.find((mem) => mem.userId === userById.userId)
   );
 
-  console.log("userProjects", userProjects);
-
   const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
 
   const { isLoading } = useSelector((rootReducer) => rootReducer.getLoading);

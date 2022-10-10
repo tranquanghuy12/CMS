@@ -12,15 +12,24 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography, Container, Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { ErrorMessage, useFormik, Formik, Form, Field } from "formik";
+import CircularProgress from "@mui/material/CircularProgress";
+import { blue } from "@mui/material/colors";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import IconButton from "@mui/material/IconButton";
 import {
   getProjectId,
   updateProject,
 } from "../../redux/Projects/ProjectsSlice";
-import { getAllProjects, getAllUsers } from "../../app/rootSaga";
+import {
+  getAllProjects,
+  getAllUsers,
+  getLoadingOnRefresh,
+} from "../../app/rootSaga";
 import swal from "sweetalert";
+import { selectTranslationsProjectDetail } from "../../redux/ChangeLanguage/ChangeLanguageSlice";
 
 //remove in array 1 the elements that are the same as the elements in array 2
 function removeDup(arr1, arr2) {
@@ -41,11 +50,18 @@ export default function BasicTextFields() {
     (rootReducer) => rootReducer.getProjectById
   );
 
+  const translationsProjectDetail = useSelector(
+    selectTranslationsProjectDetail
+  );
+
   const { usersList } = useSelector((rootReducer) => rootReducer.getUsersList);
+
+  const { isLoading } = useSelector((rootReducer) => rootReducer.getLoading);
 
   useEffect(() => {
     dispatch(getAllUsers());
     dispatch(getProjectId(id));
+    dispatch(getLoadingOnRefresh());
   }, [id]);
 
   const initialValues = {
@@ -55,8 +71,8 @@ export default function BasicTextFields() {
 
   const handleSubmit = (values) => {
     swal({
-      title: "Are you sure?",
-      text: "Once updated, you will not be able to restore it!",
+      title: `${translationsProjectDetail.warningUpdate.title}`,
+      text: `${translationsProjectDetail.warningUpdate.text}`,
       icon: "warning",
       buttons: true,
       dangerMode: true,
@@ -77,7 +93,7 @@ export default function BasicTextFields() {
           setUsersAddToProject([]);
           dispatch(getAllProjects());
           swal({
-            title: "Update successfully!",
+            title: `${translationsProjectDetail.notify.update}`,
             icon: "success",
           });
         } catch (error) {
@@ -97,8 +113,8 @@ export default function BasicTextFields() {
 
   const delUsersInProject = (e, value) => {
     swal({
-      title: "Are you sure?",
-      text: "Once deleted, you will not be able to restore it!",
+      title: `${translationsProjectDetail.warningDelete.title}`,
+      text: `${translationsProjectDetail.warningDelete.text}`,
       icon: "warning",
       buttons: true,
       dangerMode: true,
@@ -113,7 +129,7 @@ export default function BasicTextFields() {
           })
         );
         swal({
-          title: "Member removed from the project successfully!",
+          title: `${translationsProjectDetail.notify.delete}`,
           icon: "success",
         });
       }
@@ -143,43 +159,55 @@ export default function BasicTextFields() {
       {(formikProps) => {
         return (
           <Form onSubmit={formikProps.handleSubmit}>
-            <Box>
-              <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
-                Detail of project {projectById.projectId}
+            <Container component="main" maxWidth="lg" sx={{ marginTop: 6 }}>
+              <Typography variant="h4" sx={{ mb: 6, textAlign: "center" }}>
+                {translationsProjectDetail.title} "{projectById.name}"
               </Typography>
+
               <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Box
-                    component="form"
-                    sx={{
-                      "& > :not(style)": { m: 1, width: "25ch" },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                  >
+                <Grid item xs={8}>
+                  <Grid item xs={12} sx={{ mb: 4 }}>
                     <TextField
                       InputLabelProps={{ shrink: true }}
+                      required
+                      fullWidth
+                      id="name"
+                      label={translationsProjectDetail.projectName}
                       name="name"
-                      variant="standard"
-                      label="Project name"
+                      autoComplete="name"
                       value={formikProps.values.name}
                       onBlur={formikProps.handleBlur}
                       onChange={formikProps.handleChange}
                     />
+                  </Grid>
+                  <Grid item xs={12} sx={{ mb: 2 }}>
                     <TextField
                       InputLabelProps={{ shrink: true }}
+                      required
+                      fullWidth
                       name="description"
-                      label="Description"
+                      label={translationsProjectDetail.description}
+                      id="description"
+                      autoComplete="description"
                       multiline
                       rows={4}
                       value={formikProps.values.description}
                       onBlur={formikProps.handleBlur}
                       onChange={formikProps.handleChange}
                     />
-                  </Box>
+                  </Grid>
+                </Grid>
 
+                <Grid item xs={4}>
                   {/* users in project */}
-                  <Stack direction="row" spacing={1}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                    }}
+                  >
                     {projectById.member?.map((user, index) => {
                       return (
                         <Chip
@@ -188,6 +216,7 @@ export default function BasicTextFields() {
                           label={user.firstName + ", " + user.lastName}
                           onClick={() => handleClick(user)}
                           onDelete={(e) => delUsersInProject(e, user)}
+                          sx={{ m: 1, ml: 0 }}
                         />
                       );
                     })}
@@ -200,52 +229,86 @@ export default function BasicTextFields() {
                               label={user.firstName + ", " + user.lastName}
                               onClick={handleClick}
                               onDelete={(e) => delUsersAddToProject(e, user)}
+                              sx={{ m: 1, ml: 0 }}
                             />
                           );
                         })
                       : null}
+                    {/* add user button */}
+                    <Box>
+                      <Tooltip
+                        title={translationsProjectDetail.addMember}
+                        arrow
+                      >
+                        <IconButton
+                          variant="contained"
+                          color="primary"
+                          onClick={handleClickOpen}
+                        >
+                          <PersonAddAlt1Icon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Add member</DialogTitle>
+                        <DialogContent>
+                          <Stack spacing={3} sx={{ width: 500 }}>
+                            <Autocomplete
+                              multiple
+                              id="tags-outlined"
+                              options={removeDup(usersList, projectById.member)}
+                              getOptionLabel={(option) =>
+                                option.firstName + " " + option.lastName
+                              }
+                              value={usersAddToProject}
+                              filterSelectedOptions
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Choose who you want to add"
+                                  placeholder="User name"
+                                  variant="standard"
+                                />
+                              )}
+                              onChange={handleChange}
+                            />
+                          </Stack>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleClose}>Cancel</Button>
+                          <Button onClick={handleClose}>Subscribe</Button>
+                        </DialogActions>
+                      </Dialog>
+                    </Box>
                   </Stack>
                 </Grid>
-
-                <Grid item xs={6}>
-                  <Button variant="outlined" onClick={handleClickOpen}>
-                    Add user
-                  </Button>
-                  <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Add user</DialogTitle>
-                    <DialogContent>
-                      <Stack spacing={3} sx={{ width: 500 }}>
-                        <Autocomplete
-                          multiple
-                          id="tags-outlined"
-                          options={removeDup(usersList, projectById.member)}
-                          getOptionLabel={(option) =>
-                            option.firstName + " " + option.lastName
-                          }
-                          value={usersAddToProject}
-                          filterSelectedOptions
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Choose who you want to add"
-                              placeholder="User name"
-                              variant="standard"
-                            />
-                          )}
-                          onChange={handleChange}
-                        />
-                      </Stack>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose}>Cancel</Button>
-                      <Button onClick={handleClose}>Subscribe</Button>
-                    </DialogActions>
-                  </Dialog>
-                </Grid>
-
-                <Button type="submit">Update</Button>
               </Grid>
-            </Box>
+
+              <Box sx={{ position: "relative", mt: 8 }}>
+                <Button
+                  disabled={isLoading}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                >
+                  {translationsProjectDetail.update}
+                </Button>
+
+                {isLoading && (
+                  <CircularProgress
+                    size={24}
+                    sx={{
+                      color: blue[500],
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      marginTop: "-12px",
+                      marginLeft: "-12px",
+                    }}
+                  />
+                )}
+              </Box>
+            </Container>
           </Form>
         );
       }}

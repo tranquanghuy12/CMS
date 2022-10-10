@@ -21,7 +21,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { http } from "../../util/config";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { getAllUsers } from "../../app/rootSaga";
-import { selectTranslationsUsersList } from "../../redux/ChangeLanguage/ChangeLanguageSlice";
+import {
+  selectTranslationsUsersList,
+  selectTranslationsUsersListTable,
+} from "../../redux/ChangeLanguage/ChangeLanguageSlice";
+import swal from "sweetalert";
 
 export default function Users() {
   const dispatch = useDispatch();
@@ -29,7 +33,10 @@ export default function Users() {
   const [selectionModel, setSelectionModel] = useState([]);
 
   //including 2 languages for the users list table
-  const translationsUsersList = useSelector(selectTranslationsUsersList);
+  const translationsUsersLists = useSelector(selectTranslationsUsersList);
+  const translationsUsersListTable = useSelector(
+    selectTranslationsUsersListTable
+  );
 
   const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
 
@@ -48,8 +55,16 @@ export default function Users() {
     dispatch(getAllUsers());
   }, []);
 
-  const handleDelete = () => {
-    dispatch(moveUsersToTrash(selectionModel));
+  const handleDelete = async () => {
+    try {
+      await dispatch(moveUsersToTrash(selectionModel));
+      swal({
+        title: `${translationsUsersLists.notify.moveToTrash}`,
+        icon: "success",
+      });
+    } catch (error) {
+      console.log(error);
+    }
     dispatch(getIdBlogList(selectionModel));
   };
 
@@ -64,14 +79,9 @@ export default function Users() {
               alignItems: "center",
             }}
           >
-            <Typography variant="h5">
-              {lang === "en" ? "Users list" : "Danh sách người dùng"}
-            </Typography>
+            <Typography variant="h5">{translationsUsersLists.title}</Typography>
             <Stack direction="row" spacing={1}>
-              <Tooltip
-                title={lang === "en" ? "Add user" : "Thêm người dùng"}
-                arrow
-              >
+              <Tooltip title={translationsUsersLists.add} arrow>
                 <IconButton
                   variant="contained"
                   color="primary"
@@ -83,12 +93,7 @@ export default function Users() {
 
               <Box sx={{ m: 1, position: "relative" }}>
                 {selectionModel.length !== 0 ? (
-                  <Tooltip
-                    title={
-                      lang === "en" ? "Move to trash" : "Chuyển đến thùng rác"
-                    }
-                    arrow
-                  >
+                  <Tooltip title={translationsUsersLists.moveToTrash} arrow>
                     <IconButton
                       disabled={isLoading}
                       variant="contained"
@@ -122,7 +127,7 @@ export default function Users() {
           <Box sx={{ height: 400, width: "100%", mt: 3 }}>
             <DataGrid
               rows={usersList}
-              columns={translationsUsersList}
+              columns={translationsUsersListTable}
               pageSize={5}
               rowsPerPageOptions={[5]}
               checkboxSelection
@@ -135,7 +140,7 @@ export default function Users() {
                 params.row.email !== "tranquanghuy12h@gmail.com"
               }
               selectionModel={selectionModel}
-              {...translationsUsersList}
+              {...translationsUsersListTable}
               sx={{
                 backgroundColor: `${mode === "light" ? "white" : "#424242"}`,
               }}

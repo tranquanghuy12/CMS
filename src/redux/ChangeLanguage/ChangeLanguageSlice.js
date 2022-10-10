@@ -71,6 +71,52 @@ const initialState = {
     ],
   },
   translationsUsersList: {
+    en: {
+      title: "Users List",
+      add: "Add user",
+      moveToTrash: "Move to trash",
+      notify: {
+        moveToTrash: "Move to trash successfully!",
+      },
+    },
+    vi: {
+      title: "Danh sách người dùng",
+      add: "Thêm người dùng",
+      moveToTrash: "Chuyển đến thùng rác",
+      notify: {
+        moveToTrash: "Chuyển vào thùng rác thành công!",
+      },
+    },
+  },
+  translationsUsersListTrash: {
+    en: {
+      title: "Trash",
+      restore: "Restore",
+      delete: "Delete",
+      warningDelete: {
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to restore it!",
+      },
+      notify: {
+        restore: "Restore user successfully!",
+        delete: "Delete users successfully!",
+      },
+    },
+    vi: {
+      title: "Thùng rác",
+      restore: "Khôi phục",
+      delete: "Xóa",
+      warningDelete: {
+        title: "Bạn có chắc chắn?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục nó!",
+      },
+      notify: {
+        restore: "Khôi phục người dùng thành công!",
+        delete: "Xóa người dùng thành công!",
+      },
+    },
+  },
+  translationsUsersListTable: {
     en: [
       { field: "userId", headerName: "User ID", width: 100 },
       { field: "firstName", headerName: "First name", width: 150 },
@@ -120,6 +166,104 @@ const initialState = {
       },
     ],
   },
+  translationsProjectsList: {
+    en: {
+      title: "Projects List",
+      member: "member",
+      members: "members",
+      viewDetail: "View detail",
+      add: "Add",
+      delete: "Delete",
+      warningDelete: {
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to restore it!",
+      },
+      notify: {
+        delete: "Delete project successfully!",
+      },
+    },
+    vi: {
+      title: "Danh sách dự án",
+      member: "thành viên",
+      members: "thành viên",
+      viewDetail: "Chi tiết",
+      add: "Thêm dự án",
+      delete: "Xóa dự án",
+      warningDelete: {
+        title: "Bạn có chắc chắn?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục nó!",
+      },
+      notify: {
+        delete: "Xóa dự án thành công!",
+      },
+    },
+  },
+  translationsProjectDetail: {
+    en: {
+      title: "Detail of project",
+      projectName: "Project name",
+      description: "Description",
+      addMember: "Add member",
+      update: "Update",
+      warningUpdate: {
+        title: "Are you sure?",
+        text: "Once updated, you will not be able to restore it!",
+      },
+      warningDelete: {
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to restore it!",
+      },
+      notify: {
+        update: "Update successfully!",
+        delete: "Member removed from the project successfully!",
+      },
+    },
+    vi: {
+      title: "Chi tiết dự án",
+      projectName: "Tên dự án",
+      description: "Mô tả",
+      addMember: "Thêm thành viên",
+      update: "Cập nhật",
+      warningUpdate: {
+        title: "Bạn có chắc chắn?",
+        text: "Sau khi cập nhật, bạn sẽ không thể khôi phục nó!",
+      },
+      warningDelete: {
+        title: "Bạn có chắc chắn?",
+        text: "Sau khi xóa, bạn sẽ không thể khôi phục nó!",
+      },
+      notify: {
+        update: "Cập nhật thành công",
+        delete: "Đã xóa thành viên khỏi dự án thành công!",
+      },
+    },
+  },
+  translationsAddProject: {
+    en: {
+      title: "Add Project",
+      projectName: "Project name",
+      description: "Description",
+      confirm: "Confirm",
+      notify: {
+        title: "Create project successfully!",
+      },
+      error: {
+        title: "Project already exists!",
+      },
+    },
+    vi: {
+      title: "Thêm dự án",
+      projectName: "Tên dự án",
+      description: "Mô tả",
+      confirm: "Xác nhận",
+      notify: {
+        title: "Tạo dự án thành công!",
+      },
+      error: {
+        title: "Dự án đã tồn tại!",
+      },
+    },
+  },
 };
 
 export const i18nSlice = createSlice({
@@ -137,6 +281,21 @@ export const selectTranslationsSideBar = (state) =>
 
 export const selectTranslationsUsersList = (state) =>
   state.i18n.translationsUsersList[state.i18n.lang];
+
+export const selectTranslationsUsersListTrash = (state) =>
+  state.i18n.translationsUsersListTrash[state.i18n.lang];
+
+export const selectTranslationsUsersListTable = (state) =>
+  state.i18n.translationsUsersListTable[state.i18n.lang];
+
+export const selectTranslationsProjectsList = (state) =>
+  state.i18n.translationsProjectsList[state.i18n.lang];
+
+export const selectTranslationsProjectDetail = (state) =>
+  state.i18n.translationsProjectDetail[state.i18n.lang];
+
+export const selectTranslationsAddProject = (state) =>
+  state.i18n.translationsAddProject[state.i18n.lang];
 
 export const { setLang } = i18nSlice.actions;
 

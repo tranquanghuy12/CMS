@@ -15,7 +15,10 @@ import Tooltip from "@mui/material/Tooltip";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { deleteUsers, getIdListToRestore } from "../../redux/Users/UsersSlice";
 import swal from "sweetalert";
-import { selectTranslationsUsersList } from "../../redux/ChangeLanguage/ChangeLanguageSlice";
+import {
+  selectTranslationsUsersListTable,
+  selectTranslationsUsersListTrash,
+} from "../../redux/ChangeLanguage/ChangeLanguageSlice";
 
 export default function Trash() {
   const dispatch = useDispatch();
@@ -24,7 +27,12 @@ export default function Trash() {
   const [selectionModel, setSelectionModel] = useState([]);
 
   //including 2 languages for the trash table
-  const translationsUsersList = useSelector(selectTranslationsUsersList);
+  const translationsUsersListTable = useSelector(
+    selectTranslationsUsersListTable
+  );
+  const translationsUsersListTrash = useSelector(
+    selectTranslationsUsersListTrash
+  );
 
   const { mode } = useSelector((rootReducer) => rootReducer.changeMode);
 
@@ -44,23 +52,36 @@ export default function Trash() {
     dispatch(getAllUsersTrash());
   }, []);
 
-  const handleRestore = () => {
-    dispatch(getIdListToRestore(selectionModel));
+  const handleRestore = async () => {
+    try {
+      await dispatch(getIdListToRestore(selectionModel));
+      swal({
+        title: `${translationsUsersListTrash.notify.restore}`,
+        icon: "success",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleDelete = () => {
     swal({
-      title: "Are you sure?",
-      text: "Once deleted, you will not be able to restore it!",
+      title: `${translationsUsersListTrash.warningDelete.title}`,
+      text: `${translationsUsersListTrash.warningDelete.text}`,
       icon: "warning",
       buttons: true,
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => {
       if (willDelete) {
-        dispatch(deleteUsers(selectionModel));
-        swal("Delete users successfully!", {
-          icon: "success",
-        });
+        try {
+          await dispatch(deleteUsers(selectionModel));
+          swal({
+            title: `${translationsUsersListTrash.notify.delete}`,
+            icon: "success",
+          });
+        } catch (error) {
+          console.log(error);
+        }
       }
     });
   };
@@ -77,15 +98,12 @@ export default function Trash() {
             }}
           >
             <Typography variant="h5">
-              {lang === "en" ? "Trash" : "Thùng rác"}
+              {translationsUsersListTrash.title}
             </Typography>
             <Stack direction="row" spacing={1}>
               <Box sx={{ position: "relative" }}>
                 {selectionModel.length !== 0 ? (
-                  <Tooltip
-                    title={lang === "en" ? "Restore" : "Khôi phục"}
-                    arrow
-                  >
+                  <Tooltip title={translationsUsersListTrash.restore} arrow>
                     <IconButton
                       disabled={isLoading}
                       variant="contained"
@@ -117,7 +135,7 @@ export default function Trash() {
               </Box>
               <Box sx={{ m: 1, position: "relative" }}>
                 {selectionModel.length !== 0 ? (
-                  <Tooltip title={lang === "en" ? "Delete" : "Xóa"} arrow>
+                  <Tooltip title={translationsUsersListTrash.delete} arrow>
                     <IconButton
                       disabled={isLoading}
                       variant="contained"
@@ -153,7 +171,7 @@ export default function Trash() {
           <Box sx={{ height: 400, width: "100%", mt: 3 }}>
             <DataGrid
               rows={usersListTrash}
-              columns={translationsUsersList}
+              columns={translationsUsersListTable}
               pageSize={5}
               rowsPerPageOptions={[5]}
               checkboxSelection
@@ -163,7 +181,7 @@ export default function Trash() {
                 setSelectionModel(newSelectionModel);
               }}
               selectionModel={selectionModel}
-              {...translationsUsersList}
+              {...translationsUsersListTable}
               sx={{
                 backgroundColor: `${mode === "light" ? "white" : "#424242"}`,
               }}

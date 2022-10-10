@@ -30,6 +30,7 @@ import {
   postProject,
 } from "../../app/rootSaga";
 import swal from "sweetalert";
+import { selectTranslationsAddProject } from "../../redux/ChangeLanguage/ChangeLanguageSlice";
 
 export default function AddProject() {
   const dispatch = useDispatch();
@@ -39,11 +40,17 @@ export default function AddProject() {
     (rootReducer) => rootReducer.getProjectsList
   );
 
+  const translationsAddProject = useSelector(selectTranslationsAddProject);
+
   const { isLoading } = useSelector((rootReducer) => rootReducer.getLoading);
+
+  //User login account
+  const userData = JSON.parse(localStorage.getItem("User"));
 
   const initialValues = {
     name: "",
     description: "",
+    member: [userData],
   };
 
   useEffect(() => {
@@ -59,12 +66,16 @@ export default function AddProject() {
 
     if (projectData) {
       swal({
-        title: "Project name already exists!",
+        title: `${translationsAddProject.error.title}`,
         icon: "error",
       });
     } else {
       try {
         await dispatch(postProject(values));
+        swal({
+          title: `${translationsAddProject.notify.title}`,
+          icon: "success",
+        });
         navigate("/projects");
       } catch (error) {
         console.log(error);
@@ -85,13 +96,14 @@ export default function AddProject() {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    mt: 8,
                   }}
                 >
                   <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
                     <PersonAddAltIcon />
                   </Avatar>
                   <Typography component="h1" variant="h5">
-                    Add user
+                    {translationsAddProject.title}
                   </Typography>
                   <Box sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
@@ -100,7 +112,7 @@ export default function AddProject() {
                           required
                           fullWidth
                           id="name"
-                          label="Project name"
+                          label={translationsAddProject.projectName}
                           name="name"
                           autoComplete="name"
                           onBlur={formikProps.handleBlur}
@@ -115,7 +127,7 @@ export default function AddProject() {
                           required
                           fullWidth
                           name="description"
-                          label="Description"
+                          label={translationsAddProject.description}
                           id="description"
                           autoComplete="description"
                           onBlur={formikProps.handleBlur}
@@ -135,7 +147,7 @@ export default function AddProject() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                       >
-                        Comfirm
+                        {translationsAddProject.confirm}
                       </Button>
                       {isLoading && (
                         <CircularProgress

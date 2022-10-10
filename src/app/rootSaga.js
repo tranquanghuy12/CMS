@@ -123,10 +123,6 @@ function* watchMoveUsersToTrash(action) {
       const res = yield call(http.delete, `/blogs/${action.payload[i]}`);
     }
     yield put(getLoading(false));
-    swal({
-      title: "Move to trash successfully",
-      icon: "success",
-    });
 
     // re-render Users component
     yield put(getAllUsers());
@@ -155,10 +151,6 @@ function* watchRestoreUsers(action) {
 
     // re-render Trash component
     yield put(getAllUsersTrash());
-    swal({
-      title: "Restore user successfully",
-      icon: "success",
-    });
   } catch (error) {
     swal({
       title: "Restore user failed",
@@ -233,10 +225,6 @@ function* watchPostProject(action) {
   try {
     yield put(getLoading(true));
     const res = yield call(http.post, "/projects", action.payload);
-    swal({
-      title: "Create project successfully!",
-      icon: "success",
-    });
     yield put(getLoading(false));
 
     //re-render projects list
@@ -275,10 +263,6 @@ function* watchMoveProjectsToTrash(action) {
       const res = yield call(http.delete, `/projects/${action.payload[i]}`);
     }
     yield put(getLoading(false));
-    swal({
-      title: "Move projects to trash successfully",
-      icon: "success",
-    });
 
     //re-render Projects component
     yield put(getAllProjects());
